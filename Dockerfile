@@ -13,8 +13,13 @@ RUN /bin/bash /temp/install.sh \
 
 VOLUME ["/etc/pihole"]
 
-EXPOSE 80
+#EXPOSE 80
 
-EXPOSE 53
+#EXPOSE 53
 
 RUN echo "$(date "+%d.%m.%Y %T") Built from ${FRM} with tag ${TAG}" >> /build_date.info
+
+ENTRYPOINT [ \
+    "unshare", "--pid", "--fork", "--kill-child=SIGTERM", "--mount-proc", \
+    "perl", "-e", "$SIG{INT}=''; $SIG{TERM}=''; exec @ARGV;", "--", \
+    "/s6-init" ]

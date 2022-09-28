@@ -1,8 +1,8 @@
 #!/bin/bash
-
 # Creating pihole-dot-doh service
-mkdir -p /etc/services.d/pihole-dot-doh
-chmod -R 777 /etc/services.d/pihole-dot-doh
+mkdir -p /etc/services.d/pihole-dot-doh/
+chmod -R 777 /etc/services.d/pihole-dot-doh/
+touch /etc/services.d/pihole-dot-doh/run
 # run file
 # echo '#!/usr/bin/with-contenv bash' > /etc/services.d/pihole-dot-doh/run
 echo '#!/usr/bin/env bash' > /etc/services.d/pihole-dot-doh/run
