@@ -6,7 +6,6 @@ mkdir -p /etc/services.d/pihole-dot-doh
 # run file
 echo '#!/usr/bin/with-contenv bash' > /etc/services.d/pihole-dot-doh/run
 chown root:root /etc/services.d/pihole-dot-doh/run
-chmod 644 /etc/services.d/pihole-dot-doh/run
 chmod +x /etc/services.d/pihole-dot-doh/run
 # Copy config file if not exists
 echo 'cp -n /temp/stubby.yml /etc/pihole/' >> /etc/services.d/pihole-dot-doh/run
