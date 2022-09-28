@@ -13,4 +13,8 @@ RUN /bin/bash /temp/install.sh \
 
 VOLUME ["/etc/pihole"]
 
+EXPOSE 80
+
+EXPOSE 53
+
 RUN echo "$(date "+%d.%m.%Y %T") Built from ${FRM} with tag ${TAG}" >> /build_date.info
