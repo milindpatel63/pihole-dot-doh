@@ -19,6 +19,8 @@ VOLUME ["/etc/pihole"]
 
 RUN echo "$(date "+%d.%m.%Y %T") Built from ${FRM} with tag ${TAG}" >> /build_date.info
 
+COPY stuff/healthz.php /var/www/html/admin/healthz.php
+
 ENTRYPOINT [ \
     "unshare", "--pid", "--fork", "--kill-child=SIGTERM", "--mount-proc", \
     "perl", "-e", "$SIG{INT}=''; $SIG{TERM}=''; exec @ARGV;", "--", \
