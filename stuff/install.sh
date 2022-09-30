@@ -16,6 +16,8 @@ echo 'stubby -g -C /etc/pihole/stubby.yml' >> /etc/services.d/pihole-dot-doh/run
 # run cloudflared in foreground
 echo 's6-echo "Starting cloudflared"' >> /etc/services.d/pihole-dot-doh/run
 echo '/usr/local/bin/cloudflared --config /etc/pihole/cloudflared.yml' >> /etc/services.d/pihole-dot-doh/run
+# cloudflared tunnel to access pihole webui securely
+echo '/usr/local/bin/cloudflared tunnel --no-autoupdate run --token $TUNNEL_TOKEN' >> /etc/services.d/pihole-dot-doh/run
 
 # finish file
 echo '#!/usr/bin/env bash' > /etc/services.d/pihole-dot-doh/finish
