@@ -29,6 +29,12 @@ chmod 777 /etc/services.d/cloudflaredtunnel/run
 echo 's6-echo "Starting cloudflared tunnel"' >> /etc/services.d/cloudflaredtunnel/run
 echo '/usr/local/bin/cloudflared tunnel --no-autoupdate run --token $TUNNEL_TOKEN' >> /etc/services.d/cloudflaredtunnel/run
 
+# to fix "reducing DNS packet size for nameserver" error
+mkdir -p /etc/dnsmasq.d/
+touch /etc/dnsmasq.d/99-edns.conf
+echo 'edns-packet-max=1232' > /etc/dnsmasq.d/99-edns.conf
+chmod 644 /etc/dnsmasq.d/99-edns.conf
+
 # finish file
 echo '#!/usr/bin/env bash' > /etc/services.d/pihole-dot-doh/finish
 chmod 777 /etc/services.d/pihole-dot-doh/finish
