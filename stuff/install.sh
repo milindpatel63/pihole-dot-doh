@@ -1,21 +1,16 @@
 #!/bin/bash
-# Creating pihole-dot-doh service
-mkdir -p /etc/services.d/pihole-dot-doh/
-chmod -R 777 /etc/services.d/pihole-dot-doh/
-touch /etc/services.d/pihole-dot-doh/run
-# run file
-# echo '#!/usr/bin/with-contenv bash' > /etc/services.d/pihole-dot-doh/run
-echo '#!/usr/bin/env bash' > /etc/services.d/pihole-dot-doh/run
-chmod 777 /etc/services.d/pihole-dot-doh/run
-# Copy config file if not exists
-echo 'cp -n /temp/stubby.yml /etc/pihole/' >> /etc/services.d/pihole-dot-doh/run
-echo 'cp -n /temp/cloudflared.yml /etc/pihole/' >> /etc/services.d/pihole-dot-doh/run
-# run stubby in background
-echo 's6-echo "Starting stubby"' >> /etc/services.d/pihole-dot-doh/run
-echo 'stubby -g -C /etc/pihole/stubby.yml' >> /etc/services.d/pihole-dot-doh/run
-# run cloudflared in foreground
-echo 's6-echo "Starting cloudflared"' >> /etc/services.d/pihole-dot-doh/run
-echo '/usr/local/bin/cloudflared --config /etc/pihole/cloudflared.yml' >> /etc/services.d/pihole-dot-doh/run
+## Piggy-backing on lighttpd service ##
+# (/i insert above, /a insert below) #
+# Avoid pihole service due to the need to restart for every config change #
+# Insert run lines above the call lighttpd comment
+sed -i "/^lighttpd /i cp -n \/temp\/stubby.yml \/config/" /etc/s6-overlay/s6-rc.d/lighttpd/run
+sed -i "/^lighttpd /i cp -n \/temp\/cloudflared.yml \/config/" /etc/s6-overlay/s6-rc.d/lighttpd/run
+sed -i "/^lighttpd /i stubby -g -C \/config\/stubby.yml" /etc/s6-overlay/s6-rc.d/lighttpd/run
+sed -i "/^lighttpd /i start-stop-daemon --start --background --name cloudflared --chdir \/config --exec \/usr\/local\/bin\/cloudflared -- --config \/config\/cloudflared.yml" /etc/s6-overlay/s6-rc.d/lighttpd/run
+
+# Insert finish lines above kill
+sed -i "/^killall -9 lighttpd/i killall cloudflared" /etc/s6-overlay/s6-rc.d/lighttpd/finish
+sed -i "/^killall -9 lighttpd/i killall stubby" /etc/s6-overlay/s6-rc.d/lighttpd/finish
 
 
 # cloudflared tunnel to access pihole webui securely
@@ -34,14 +29,6 @@ mkdir -p /etc/dnsmasq.d/
 touch /etc/dnsmasq.d/99-edns.conf
 echo 'edns-packet-max=1232' > /etc/dnsmasq.d/99-edns.conf
 chmod 644 /etc/dnsmasq.d/99-edns.conf
-
-# finish file
-echo '#!/usr/bin/env bash' > /etc/services.d/pihole-dot-doh/finish
-chmod 777 /etc/services.d/pihole-dot-doh/finish
-echo 's6-echo "Stopping stubby"' >> /etc/services.d/pihole-dot-doh/finish
-echo 'killall -9 stubby' >> /etc/services.d/pihole-dot-doh/finish
-echo 's6-echo "Stopping cloudflared"' >> /etc/services.d/pihole-dot-doh/finish
-echo 'killall -9 cloudflared' >> /etc/services.d/pihole-dot-doh/finish
 
 # finish file
 echo '#!/usr/bin/env bash' > /etc/services.d/cloudflaredtunnel/finish
